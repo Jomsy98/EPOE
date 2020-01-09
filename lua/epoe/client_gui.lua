@@ -15,6 +15,7 @@ local epoe_max_alpha = CreateClientConVar("epoe_max_alpha", "255", true, false)
 local epoe_always_clickable = CreateClientConVar("epoe_always_clickable", "0", true, false)
 local epoe_links_mode = CreateClientConVar("epoe_links_mode", "1", true, false)
 local epoe_parse_steamids = CreateClientConVar("epoe_parse_steamids", "1", true, false)
+local epoe_tf_feedtextalpha = CreateClientConVar("epoe_tf_feedtextalpha", "255", true, false)
 
 --- HELPER ---
 local function CheckFor(tbl,a,b)
@@ -224,7 +225,7 @@ function PANEL:Init()
 		CheckBox("no HUD mode","epoe_always_clickable")
 		CheckBox("background","epoe_draw_background")
 		CheckBox("screenshots","epoe_show_in_screenshots")
-
+		
 		local FontChooser = vgui.Create("DComboBox", Cfg )
 		local function AddFont(txt,name)
 			local ok=pcall(function() surface.SetFont(name) end)
@@ -307,6 +308,28 @@ function PANEL:Init()
 			Cfg:AddPanel( PlaceChooser )
 		end)
 		if not ok then ErrorNoHalt(err) end
+		
+		
+		
+		-- (TF) Slider for convar epoe_tf_feedtextalpha
+		local function Slider(label, convar)
+			local slider = vgui.Create("DNumSlider", self)
+			slider:SetText(label)
+			slider:SetDecimals(0)
+			slider:SetMin(1)
+			slider:SetMax(255)
+			slider:SetDefaultValue(255)
+			slider:SetConVar(convar)
+			slider:SetValue(epoe_tf_feedtextalpha:GetInt())
+			slider:SizeToContents()
+			slider:SetTall(16)
+			slider:SetWide(200)
+			slider:SetDark(false)
+			slider:GetTextArea():SetTextColor(Color(255, 255, 255))
+			Cfg:AddPanel(slider)
+		end
+		Slider("feed text alpha", "epoe_tf_feedtextalpha")
+		
 	self.uppermenu=Cfg
 
 
@@ -317,8 +340,8 @@ function PANEL:Init()
 	self.RichText = vgui.Create('RichText',canvas)
 	local RichText=self.RichText
 		RichText:InsertColorChange(255,255,255,255)
-		RichText:SetPaintBackgroundEnabled( false )
-		RichText:SetPaintBorderEnabled( false )
+		RichText:SetPaintBackgroundEnabled(false)
+		RichText:SetPaintBorderEnabled(false)
 		RichText:SetMouseInputEnabled(true)
 		-- We'll keep it visible constantly but clip it off to make the richtext behave how we want
 		RichText:SetVerticalScrollbarEnabled(true)
@@ -461,11 +484,21 @@ function PANEL:SetColor(r,g,b)
 	self.RichText.lb = b
 end
 
+function PANEL:SetColorAlpha(r,g,b,a)
+	self.RichText:InsertColorChange(r,g,b,a)
+	self.RichText.lr = r
+	self.RichText.lg = g
+	self.RichText.lb = b
+	self.RichText.la = a
+end
+
+
 function PANEL:ResetLastColor(r,g,b)
 	local r = self.RichText.lr or r or 255
 	local g = self.RichText.lg or g or 255
 	local b = self.RichText.lb or b or 255
-	self.RichText:InsertColorChange(r,g,b,255)
+	local a = self.RichText.la or 255
+	self.RichText:InsertColorChange(r,g,b,a)
 end
 ---------------------
 -- Visuals
@@ -874,23 +907,25 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 			end
 			e.GUI:Activity()
 		end
+		
+		local textAlpha = epoe_tf_feedtextalpha:GetInt()
 
 		if epoe_timestamps:GetBool() then
 			if not notimestamp then
-				e.GUI:SetColor(100,100,100)	e.GUI:AppendText(			"[")
+				e.GUI:SetColorAlpha(100, 100, 100, textAlpha)	e.GUI:AppendText(			"[")
 
 				local formatted_stamp = os.date(epoe_timestamp_format:GetString())
-				e.GUI:SetColor(255,255,255)	e.GUI:AppendText(formatted_stamp)
+				e.GUI:SetColorAlpha(255, 255, 255, textAlpha)	e.GUI:AppendText(formatted_stamp)
 
-				e.GUI:SetColor(100,100,100)	e.GUI:AppendText(			"] ")
+				e.GUI:SetColorAlpha(100, 100, 100, textAlpha)	e.GUI:AppendText(			"] ")
 			end
 			notimestamp = not ( newText:Right(1)=="\n" ) -- negation hard
 		end
 
 		if epoemsg then
-			e.GUI:SetColor(255,100,100)
+			e.GUI:SetColorAlpha(255, 100, 100, textAlpha)
 			e.GUI:AppendText("[EPOE] ")
-			e.GUI:SetColor(255,250,250)
+			e.GUI:SetColorAlpha(255, 250, 250, textAlpha)
 			e.GUI:AppendTextX(newText.."\n")
 			notimestamp = false
 			return
@@ -898,15 +933,15 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 
 		-- did I really write this. Oh well...
 		if e.HasFlag(flags,e.IS_MSGC) and c and type(c) == "table" and type(c.r) == "number" and type(c.g) == "number" and type(c.b) == "number" then
-			e.GUI:SetColor(c.r, c.g, c.b)
+			e.GUI:SetColorAlpha(c.r, c.g, c.b, textAlpha)
 		elseif e.HasFlag(flags,e.IS_ERROR) then
-			e.GUI:SetColor(255,80,80)
+			e.GUI:SetColorAlpha(255, 80, 80, textAlpha)
 		elseif e.HasFlag(flags,e.IS_CERROR) then
-			e.GUI:SetColor( 234,111,111)
+			e.GUI:SetColorAlpha(234, 111, 111, textAlpha)
 		elseif e.HasFlag(flags,e.IS_MSGN) or e.HasFlag(flags,e.IS_MSG) then
-			e.GUI:SetColor( 255,181,80)
+			e.GUI:SetColorAlpha(255, 181, 80, textAlpha)
 		else
-			e.GUI:SetColor(255,255,255)
+			e.GUI:SetColorAlpha(255, 255, 255, textAlpha)
 		end
 
 		e.GUI:AppendTextX(newText)
