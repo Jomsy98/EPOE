@@ -1,7 +1,7 @@
 Modifications
 =======
 This fork has a few minor improvements over the original.
-- Works with ULib's UCL now. You can authorize ULX groups to subscribe to epoe's feed, instead of having to make players a full-blown admin.
+- Works with ULib's UCL now. You can authorize ULX groups to subscribe to epoe's feed, instead of having to make players full-blown admins just to view the feed.
 <br/>
 
 
