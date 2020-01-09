@@ -34,8 +34,25 @@ local unpack=unpack
 local table=table
 local bit=bit
 
+local ULibUCL = ULib.ucl -- I have no clue what fuckery epoe does to void the global scope, so we need this to poll ULib
+
+
+--//-----| TF extension ontop of regular EPOE |-----//
+local epoeTF = {}
+
+--//-----| Extra configuration (i.e. not part of regular EPOE) |-----//
+epoeTF.xConfig = {}
+epoeTF.xConfig.AdminULXGroups = { "mod" }
+--		// This list contains all the ulx groups that epoe will consider as administrative groups.
+--		// In other words, the ulx groups that are allowed to subscribe to the epoe feed.
+--		// Because of UCL inheritence, only the lowest administrative group needs to be in this list.
+--		// For example, if "superadmin" inherits from "admin" and "admin" inherits from "mod",
+--		// then you only have to specify "mod" to authorize all 3 groups.
+
+
+
 -- inform the client of the version
-CreateConVar( "epoe_version", "2.61", FCVAR_NOTIFY )
+CreateConVar( "epoe_version", "2.61-tf", FCVAR_NOTIFY )
 -- TODO: Move these on clientside
 --local epoe_client_traces=CreateConVar("epoe_client_traces","0")
 --local epoe_server_traces=CreateConVar("epoe_server_traces","0")
@@ -159,7 +176,21 @@ Realerror=G.error
 	-- Override for admin mods :o
 	function CanSubscribe(pl,unsubscribe)
 		--RealPrint( tostring(pl)..(unsubscribe and "unsubscribed from" or "subscribed to").." EPOE" )
-		return pl:IsAdmin("epoe")
+		if ULibUCL then
+			local validGroup = false
+			for _, ulxGroup in ipairs(epoeTF.xConfig.AdminULXGroups) do
+				if (pl:CheckGroup(ulxGroup)) then
+					validGroup = true
+				end
+			end
+			if (validGroup) then
+				return true
+			else
+				return false
+			end
+		else
+			return pl:IsAdmin("epoe") -- gmod's basic and dumb check (i.e. it ignores the ucl)
+		end
 	end
 
 	function OnSubCmd(pl,_,argz)
