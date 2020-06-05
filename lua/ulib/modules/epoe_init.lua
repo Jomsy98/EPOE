@@ -25,7 +25,8 @@ include('epoe/shared.lua')
 
 if SERVER then
 
-	AddCSLuaFile("autorun/epoe_init.lua")
+	--AddCSLuaFile("autorun/epoe_init.lua")
+	AddCSLuaFile("ulib/modules/epoe_init.lua")
 
 	AddCSLuaFile("epoe/client.lua")
 	AddCSLuaFile("epoe/client_ui.lua")
