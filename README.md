@@ -1,5 +1,8 @@
+[![Build Status](https://travis-ci.org/PsychoticBroni/EPOE.svg?branch=master)](https://travis-ci.org/github/PsychoticBroni/EPOE)
+
 Modifications
 =======
+
 This fork has a few minor improvements over the original.
 - Works with ULib's UCL now (and also requires ULib now). You can authorize ULX groups to subscribe to epoe's feed, instead of having to make players full-blown admins just to view the feed.
 - Additional convar setting for feed text opacity
