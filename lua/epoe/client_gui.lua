@@ -3,7 +3,7 @@ local e=epoe -- we cant be in epoe table or we'd need to add locals here on ever
 local TagHuman=e.TagHuman
 
 -- For reloading
-if ValidPanel(e.GUI) then e.GUI:Remove() end
+if e.GUI and e.GUI:IsValid() then e.GUI:Remove() end
 
 local gradient = surface.GetTextureID( "VGUI/gradient_up" )
 
@@ -15,7 +15,9 @@ local epoe_max_alpha = CreateClientConVar("epoe_max_alpha", "255", true, false)
 local epoe_always_clickable = CreateClientConVar("epoe_always_clickable", "0", true, false)
 local epoe_links_mode = CreateClientConVar("epoe_links_mode", "1", true, false)
 local epoe_parse_steamids = CreateClientConVar("epoe_parse_steamids", "1", true, false)
-local epoe_tf_feedtextalpha = CreateClientConVar("epoe_tf_feedtextalpha", "255", true, false)
+
+-- Cannot be 1 by default or normal players would be exposed to EPOE
+local epoe_context_menu = CreateClientConVar("epoe_context_menu", "0", true, false)
 
 --- HELPER ---
 local function CheckFor(tbl,a,b)
@@ -221,13 +223,15 @@ function PANEL:Init()
 		CheckBox("to console","epoe_toconsole")
 		CheckBox("show on activity","epoe_show_on_activity")
 		CheckBox("no autoscroll","epoe_disable_autoscroll")
-		CheckBox("stay active","epoe_keep_active")
-		CheckBox("no HUD mode","epoe_always_clickable")
-		CheckBox("background","epoe_draw_background")
+		CheckBox("Stay visible","epoe_keep_active")
+		CheckBox("Hoverable anywhere","epoe_always_clickable")
+		CheckBox("Draw BG","epoe_draw_background")
 		CheckBox("screenshots","epoe_show_in_screenshots")
-		
+		CheckBox("In Ctx Menu","epoe_context_menu")
+
 		local FontChooser = vgui.Create("DComboBox", Cfg )
 		local function AddFont(txt,name)
+			--TODO: FIXME: no longer works
 			local ok=pcall(function() surface.SetFont(name) end)
 			if ok then
 				FontChooser:AddChoice(txt,name)
@@ -241,7 +245,7 @@ function PANEL:Init()
 		AddFont("Even smaller","DebugFixedSmall")
 
 		AddFont("Smallest","HudHintTextSmall")
-		AddFont("Smaller","ConsoleText")
+		--AddFont("Smaller","ConsoleText")
 		AddFont("Small","DefaultSmall")
 		AddFont("Chat","ChatFont")
 
@@ -251,7 +255,7 @@ function PANEL:Init()
 		AddFont("Huge","DermaLarge")
 		AddFont("Huger","DermaLarge")
 
-		AddFont("TEST","BUTOFCOURSE")
+		--AddFont("TEST","BUTOFCOURSE")
 
 		function FontChooser.Think(FontChooser)
 			FontChooser:ConVarStringThink()
@@ -875,6 +879,22 @@ end
 
 concommand.Add('+epoe',epoe_toggle)
 concommand.Add('-epoe',epoe_toggle)
+
+
+local ctxopen
+hook.Add("ContextMenuOpened", TagHuman, function()
+	if not g_ContextMenu or not g_ContextMenu:IsValid() then return end
+	if not epoe_context_menu:GetBool() then return end
+	ctxopen=true
+	e.ShowGUI()
+	e.GUI:ButtonHolding(true) -- sets parent
+	e.GUI:SetParent(g_ContextMenu) -- so set it to context menu
+end)
+
+hook.Add("ContextMenuClosed", TagHuman, function()
+	if not ctxopen then return end
+	e.GUI:ButtonHolding(false)
+end)
 
 
 ----------------------------
