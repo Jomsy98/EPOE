@@ -910,25 +910,23 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 			end
 			e.GUI:Activity()
 		end
-		
-		local textAlpha = epoe_tf_feedtextalpha:GetInt()
 
 		if epoe_timestamps:GetBool() then
 			if not notimestamp then
-				e.GUI:SetColorAlpha(100, 100, 100, textAlpha)	e.GUI:AppendText(			"[")
+				e.GUI:SetColorAlpha(100, 100, 100)	e.GUI:AppendText(			"[")
 
 				local formatted_stamp = os.date(epoe_timestamp_format:GetString())
-				e.GUI:SetColorAlpha(255, 255, 255, textAlpha)	e.GUI:AppendText(formatted_stamp)
+				e.GUI:SetColorAlpha(255, 255, 255)	e.GUI:AppendText(formatted_stamp)
 
-				e.GUI:SetColorAlpha(100, 100, 100, textAlpha)	e.GUI:AppendText(			"] ")
+				e.GUI:SetColorAlpha(100, 100, 100)	e.GUI:AppendText(			"] ")
 			end
 			notimestamp = not ( newText:Right(1)=="\n" ) -- negation hard
 		end
 
 		if epoemsg then
-			e.GUI:SetColorAlpha(255, 100, 100, textAlpha)
+			e.GUI:SetColorAlpha(255, 100, 100)
 			e.GUI:AppendText("[EPOE] ")
-			e.GUI:SetColorAlpha(255, 250, 250, textAlpha)
+			e.GUI:SetColorAlpha(255, 250, 250)
 			e.GUI:AppendTextX(newText.."\n")
 			notimestamp = false
 			return
@@ -936,15 +934,15 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 
 		-- did I really write this. Oh well...
 		if e.HasFlag(flags,e.IS_MSGC) and c and type(c) == "table" and type(c.r) == "number" and type(c.g) == "number" and type(c.b) == "number" then
-			e.GUI:SetColorAlpha(c.r, c.g, c.b, textAlpha)
+			e.GUI:SetColorAlpha(c.r, c.g, c.b)
 		elseif e.HasFlag(flags,e.IS_ERROR) then
-			e.GUI:SetColorAlpha(255, 80, 80, textAlpha)
+			e.GUI:SetColorAlpha(255, 80, 80)
 		elseif e.HasFlag(flags,e.IS_CERROR) then
-			e.GUI:SetColorAlpha(234, 111, 111, textAlpha)
+			e.GUI:SetColorAlpha(234, 111, 111)
 		elseif e.HasFlag(flags,e.IS_MSGN) or e.HasFlag(flags,e.IS_MSG) then
-			e.GUI:SetColorAlpha(255, 181, 80, textAlpha)
+			e.GUI:SetColorAlpha(255, 181, 80)
 		else
-			e.GUI:SetColorAlpha(255, 255, 255, textAlpha)
+			e.GUI:SetColorAlpha(255, 255, 255)
 		end
 
 		e.GUI:AppendTextX(newText)
