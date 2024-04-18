@@ -481,14 +481,6 @@ function PANEL:SetColor(r,g,b)
 	self.RichText.lb = b
 end
 
-function PANEL:SetColorAlpha(r,g,b,a)
-	self.RichText:InsertColorChange(r,g,b,a)
-	self.RichText.lr = r
-	self.RichText.lg = g
-	self.RichText.lb = b
-	self.RichText.la = a
-end
-
 
 function PANEL:ResetLastColor(r,g,b)
 	local r = self.RichText.lr or r or 255
@@ -913,20 +905,20 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 
 		if epoe_timestamps:GetBool() then
 			if not notimestamp then
-				e.GUI:SetColorAlpha(100, 100, 100)	e.GUI:AppendText(			"[")
+				e.GUI:SetColor(100, 100, 100)	e.GUI:AppendText(			"[")
 
 				local formatted_stamp = os.date(epoe_timestamp_format:GetString())
-				e.GUI:SetColorAlpha(255, 255, 255)	e.GUI:AppendText(formatted_stamp)
+				e.GUI:SetColor(255, 255, 255)	e.GUI:AppendText(formatted_stamp)
 
-				e.GUI:SetColorAlpha(100, 100, 100)	e.GUI:AppendText(			"] ")
+				e.GUI:SetColor(100, 100, 100)	e.GUI:AppendText(			"] ")
 			end
 			notimestamp = not ( newText:Right(1)=="\n" ) -- negation hard
 		end
 
 		if epoemsg then
-			e.GUI:SetColorAlpha(255, 100, 100)
+			e.GUI:SetColor(255, 100, 100)
 			e.GUI:AppendText("[EPOE] ")
-			e.GUI:SetColorAlpha(255, 250, 250)
+			e.GUI:SetColor(255, 250, 250)
 			e.GUI:AppendTextX(newText.."\n")
 			notimestamp = false
 			return
@@ -934,15 +926,15 @@ hook.Add( TagHuman, TagHuman..'_GUI', function(newText,flags,c)
 
 		-- did I really write this. Oh well...
 		if e.HasFlag(flags,e.IS_MSGC) and c and type(c) == "table" and type(c.r) == "number" and type(c.g) == "number" and type(c.b) == "number" then
-			e.GUI:SetColorAlpha(c.r, c.g, c.b)
+			e.GUI:SetColor(c.r, c.g, c.b)
 		elseif e.HasFlag(flags,e.IS_ERROR) then
-			e.GUI:SetColorAlpha(255, 80, 80)
+			e.GUI:SetColor(255, 80, 80)
 		elseif e.HasFlag(flags,e.IS_CERROR) then
-			e.GUI:SetColorAlpha(234, 111, 111)
+			e.GUI:SetColor(234, 111, 111)
 		elseif e.HasFlag(flags,e.IS_MSGN) or e.HasFlag(flags,e.IS_MSG) then
-			e.GUI:SetColorAlpha(255, 181, 80)
+			e.GUI:SetColor(255, 181, 80)
 		else
-			e.GUI:SetColorAlpha(255, 255, 255)
+			e.GUI:SetColor(255, 255, 255)
 		end
 
 		e.GUI:AppendTextX(newText)
