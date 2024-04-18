@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/PsychoticBroni/EPOE.svg?branch=master)](https://travis-ci.org/github/PsychoticBroni/EPOE)
-
 Modifications
 =======
 
